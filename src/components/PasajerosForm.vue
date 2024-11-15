@@ -1,28 +1,31 @@
-<!-- Practico3/src/components/PasajerosForm.vue -->
+<!-- src/components/PasajerosForm.vue -->
 <template>
-    <div>
-        <h3>Datos del Pasajero</h3>
-        <label for="nombre">Nombre Completo:</label>
-        <input type="text" id="nombre" v-model.trim="internalData.nombre" @input="validateNombre"
-            placeholder="Nombre Completo" />
-        <div v-if="nombreError" class="error">{{ nombreError }}</div>
+    <div class="card"> <!-- Envuelto en un card de Bootstrap -->
+        <div class="card-body">
+            <h5 class="card-title">Datos del Pasajero</h5> <!-- Título dentro del card -->
+            <label for="nombre">Nombre Completo:</label>
+            <input type="text" id="nombre" v-model.trim="internalData.nombre" @input="validateNombre"
+                placeholder="Nombre Completo" />
+            <div v-if="nombreError" class="error">{{ nombreError }}</div>
 
-        <label for="dni">Número de Pasaporte/DNI (Argentina):</label>
-        <input type="text" id="dni" v-model.trim="internalData.dni" @input="validateDni" placeholder="DNI/Pasaporte" />
-        <div v-if="dniError" class="error">{{ dniError }}</div>
+            <label for="dni">Número de Pasaporte/DNI (Argentina):</label>
+            <input type="text" id="dni" v-model.trim="internalData.dni" @input="validateDni"
+                placeholder="DNI/Pasaporte" />
+            <div v-if="dniError" class="error">{{ dniError }}</div>
 
-        <label for="fechaNacimiento">Fecha de Nacimiento (dd/mm/yyyy):</label>
-        <input type="text" id="fechaNacimiento" v-model="internalData.fechaNacimiento" @input="validateFechaNacimiento"
-            placeholder="dd/mm/yyyy" />
-        <div v-if="fechaNacimientoError" class="error">{{ fechaNacimientoError }}</div>
+            <label for="fechaNacimiento">Fecha de Nacimiento (dd/mm/yyyy):</label>
+            <input type="text" id="fechaNacimiento" v-model="internalData.fechaNacimiento"
+                @input="validateFechaNacimiento" placeholder="dd/mm/yyyy" />
+            <div v-if="fechaNacimientoError" class="error">{{ fechaNacimientoError }}</div>
 
-        <label for="nacionalidad">Nacionalidad:</label>
-        <select id="nacionalidad" v-model="internalData.nacionalidad">
-            <option value="" disabled>Selecciona tu nacionalidad</option>
-            <option v-for="pais in paises" :key="pais.name.common" :value="pais.name.common">{{ pais.name.common }}
-            </option>
-        </select>
-        <div v-if="!internalData.nacionalidad" class="error">Debes seleccionar una nacionalidad.</div>
+            <label for="nacionalidad">Nacionalidad:</label>
+            <select id="nacionalidad" v-model="internalData.nacionalidad">
+                <option value="" disabled>Selecciona tu nacionalidad</option>
+                <option v-for="pais in paises" :key="pais.name.common" :value="pais.name.common">{{ pais.name.common }}
+                </option>
+            </select>
+            <div v-if="!internalData.nacionalidad" class="error">Debes seleccionar una nacionalidad.</div>
+        </div>
     </div>
 </template>
 
@@ -93,7 +96,7 @@ export default {
             }
 
             const today = new Date();
-            const age = today.getFullYear() - date.getFullYear();
+            let age = today.getFullYear() - date.getFullYear();
             const m = today.getMonth() - date.getMonth();
             if (m < 0 || (m === 0 && today.getDate() < date.getDate())) {
                 age--;
