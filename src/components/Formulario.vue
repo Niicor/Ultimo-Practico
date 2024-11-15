@@ -1,4 +1,4 @@
-<!-- Practico3/src/components/Formulario.vue -->
+<!-- src/components/Formulario.vue -->
 <template>
     <form @submit.prevent="submitForm">
         <PasajerosForm v-model="pasajeroData" />

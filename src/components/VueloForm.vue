@@ -1,4 +1,4 @@
-<!-- Practico3/src/components/VueloForm.vue -->
+<!-- src/components/VueloForm.vue -->
 <template>
     <div>
         <h3>Datos del Vuelo</h3>

@@ -1,4 +1,4 @@
-<!-- Practico3/src/App.vue -->
+<!-- src/App.vue -->
 <template>
   <Formulario />
 </template>

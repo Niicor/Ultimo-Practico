@@ -1,4 +1,4 @@
-<!-- Practico3/src/components/PasajerosForm.vue -->
+<!-- src/components/PasajerosForm.vue -->
 <template>
     <div>
         <h3>Datos del Pasajero</h3>
@@ -93,7 +93,7 @@ export default {
             }
 
             const today = new Date();
-            const age = today.getFullYear() - date.getFullYear();
+            let age = today.getFullYear() - date.getFullYear();
             const m = today.getMonth() - date.getMonth();
             if (m < 0 || (m === 0 && today.getDate() < date.getDate())) {
                 age--;
