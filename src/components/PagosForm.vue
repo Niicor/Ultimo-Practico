@@ -3,7 +3,7 @@
     <div class="card">
         <div class="card-body">
     <div class="container">
-      <h3>Datos de Pago</h3>
+      <h5>Datos de Pago</h5>
       <div class="row">
         <div class="col-md-12">
           <label for="cardNumber">Número de Tarjeta:</label>
