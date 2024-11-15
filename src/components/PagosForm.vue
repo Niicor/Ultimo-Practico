@@ -1,34 +1,40 @@
 <!-- Practico3/src/components/PagosForm.vue -->
 <template>
-    <div>
-        <h3>Datos de Pago</h3>
-
-        <label for="cardNumber">Número de Tarjeta:</label>
-        <input type="text" id="cardNumber" v-model.trim="internalData.cardNumber" @input="detectCardType"
-            placeholder="XXXX XXXX XXXX XXXX" />
-        <img :src="cardTypeImage" v-if="cardTypeImage" alt="Card Type" class="card-logo">
-        <div v-if="cardNumberError" class="error">{{ cardNumberError }}</div>
-
-
-        <label for="expiryDate">Fecha de Vencimiento (MM/AA):</label>
-        <input type="text" id="expiryDate" v-model="internalData.expiryDate" @input="validateExpiryDate"
-            placeholder="MM/AA" />
-        <div v-if="expiryDateError" class="error">{{ expiryDateError }}</div>
-
-
-        <label for="cvv">CVV:</label>
-        <input type="text" id="cvv" v-model="internalData.cvv" @input="validateCvv" placeholder="CVV" />
-        <div v-if="cvvError" class="error">{{ cvvError }}</div>
-
-
-
-        <label for="cardName">Nombre en la Tarjeta:</label>
-        <input type="text" id="cardName" v-model="internalData.cardName" @input="validateCardName"
-            placeholder="Nombre Completo" />
-        <div v-if="cardNameError" class="error">{{ cardNameError }}</div>
-
+    <div class="card">
+        <div class="card-body">
+    <div class="container">
+      <h3>Datos de Pago</h3>
+      <div class="row">
+        <div class="col-md-12">
+          <label for="cardNumber">Número de Tarjeta:</label>
+          <input type="text" class="form-control" id="cardNumber" v-model.trim="internalData.cardNumber" @input="detectCardType" placeholder="XXXX XXXX XXXX XXXX" />
+          <img :src="cardTypeImage" v-if="cardTypeImage" alt="Card Type" class="card-logo mt-2">
+          <div v-if="cardNumberError" class="text-danger">{{ cardNumberError }}</div>
+        </div>
+      </div>
+      <div class="row mt-3">
+        <div class="col-md-6">
+          <label for="expiryDate">Fecha de Vencimiento:</label>
+          <input type="text" class="form-control" id="expiryDate" v-model="internalData.expiryDate" @input="validateExpiryDate" placeholder="MM/AA" />
+          <div v-if="expiryDateError" class="text-danger">{{ expiryDateError }}</div>
+        </div>
+        <div class="col-md-6">
+          <label for="cvv">CVV:</label>
+          <input type="text" class="form-control" id="cvv" v-model="internalData.cvv" @input="validateCvv" placeholder="CVV" />
+          <div v-if="cvvError" class="text-danger">{{ cvvError }}</div>
+        </div>
+      </div>
+      <div class="row mt-3">
+        <div class="col-md-12">
+          <label for="cardName">Nombre en la Tarjeta:</label>
+          <input type="text" class="form-control" id="cardName" v-model="internalData.cardName" @input="validateCardName" placeholder="Nombre Completo" />
+          <div v-if="cardNameError" class="text-danger">{{ cardNameError }}</div>
+        </div>
+      </div>
     </div>
-</template>
+    </div>
+</div>
+  </template>
 
 <script>
 import { ref, watch, computed } from 'vue';
@@ -134,3 +140,8 @@ export default {
 };
 
 </script>
+<style scoped>
+.card-logo {
+  max-width: 50px; /* Ajusta el tamaño máximo de la imagen de la tarjeta */
+}
+</style>
