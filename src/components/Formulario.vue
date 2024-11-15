@@ -1,6 +1,10 @@
 <!-- src/components/Formulario.vue -->
 <template>
-    <div class="container">
+    <div class="container" :class="{ 'dark-mode': isDarkMode }">
+        <button @click="toggleDarkMode" class="btn btn-secondary mt-3 mb-3">
+            {{ isDarkMode ? 'Modo Claro' : 'Modo Oscuro' }}
+        </button>
+
         <form @submit.prevent="submitForm">
             <div class="row">
                 <div class="col-md-4"> <!-- Pasajeros - Columna de 4 en pantallas medianas y grandes -->
@@ -30,12 +34,35 @@
 import PasajerosForm from './PasajerosForm.vue';
 import VueloForm from './VueloForm.vue';
 import PagosForm from './PagosForm.vue';
+import { ref, onMounted } from 'vue';
 
 export default {
     components: {
         PasajerosForm,
         VueloForm,
         PagosForm,
+    },
+    setup() {
+        const isDarkMode = ref(false);
+
+        const toggleDarkMode = () => {
+            isDarkMode.value = !isDarkMode.value;
+            // Guardar la preferencia del usuario en localStorage (opcional)
+            localStorage.setItem('darkMode', isDarkMode.value);
+        };
+
+        // Cargar la preferencia del usuario al iniciar (opcional)
+        onMounted(() => {
+            const storedDarkMode = localStorage.getItem('darkMode');
+            if (storedDarkMode !== null) {
+                isDarkMode.value = JSON.parse(storedDarkMode); // Convertir a booleano
+            }
+        });
+
+        return {
+            isDarkMode,
+            toggleDarkMode,
+        };
     },
     data() {
         return {
@@ -79,7 +106,6 @@ export default {
                 if (!this.pagoData[key]) return false;
             }
             return true;
-
         },
     },
     methods: {
@@ -96,3 +122,37 @@ export default {
     },
 };
 </script>
+
+<style scoped>
+.dark-mode {
+    background-color: #343a40;
+    /* Color de fondo oscuro */
+    color: #f8f9fa;
+    /* Color de texto claro */
+}
+
+.dark-mode .card {
+    background-color: #454d55;
+    /* Color de fondo oscuro para las cards */
+    color: #f8f9fa;
+    /* Color de texto claro en las cards */
+}
+
+/* Estilos adicionales para elementos específicos en modo oscuro */
+.dark-mode label,
+.dark-mode input,
+.dark-mode select,
+.dark-mode option {
+    color: #f8f9fa;
+    /* Ajustar el color del texto en inputs, labels, etc. */
+    background-color: #454d55;
+}
+
+.dark-mode .btn-secondary {
+    color: white;
+}
+
+.dark-mode option {
+    background-color: #454d55;
+}
+</style>
