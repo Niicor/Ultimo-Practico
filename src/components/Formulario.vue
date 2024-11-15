@@ -1,12 +1,29 @@
 <!-- src/components/Formulario.vue -->
 <template>
-    <form @submit.prevent="submitForm">
-        <PasajerosForm v-model="pasajeroData" />
-        <VueloForm v-model="vueloData" />
-        <PagosForm v-model="pagoData" />
-        <div v-if="formHasErrors" class="error">El formulario tiene errores. Por favor, corrígelos para continuar.</div>
-        <button type="submit" :disabled="!isFormValid">Reservar Vuelo</button>
-    </form>
+    <div class="container">
+        <form @submit.prevent="submitForm">
+            <div class="row">
+                <div class="col-md-4"> <!-- Pasajeros - Columna de 4 en pantallas medianas y grandes -->
+                    <PasajerosForm v-model="pasajeroData" />
+                </div>
+                <div class="col-md-4"> <!-- Vuelo - Columna de 4 en pantallas medianas y grandes -->
+                    <VueloForm v-model="vueloData" />
+                </div>
+                <div class="col-md-4"> <!-- Pagos - Columna de 4 en pantallas medianas y grandes -->
+                    <PagosForm v-model="pagoData" />
+                </div>
+            </div>
+
+            <div class="mt-3" v-if="formHasErrors">
+                <div class="alert alert-danger" role="alert">El formulario tiene errores. Por favor, corrígelos para
+                    continuar.</div>
+            </div>
+            <button type="submit" :disabled="!isFormValid" class="btn btn-primary mt-3">Reservar Vuelo</button>
+            <div v-if="!isFormValid" class="alert alert-danger mt-3" role="alert">
+                Completa todos los campos correctamente para habilitar el botón.
+            </div>
+        </form>
+    </div>
 </template>
 
 <script>
