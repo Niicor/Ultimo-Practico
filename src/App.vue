@@ -2,17 +2,20 @@
 <template>
   <Navbar @toggle-dark-mode="toggleDarkMode" :is-dark-mode="isDarkMode" />
   <Formulario :is-dark-mode="isDarkMode" />
+  <Footer :is-dark-mode="isDarkMode" />
 </template>
 
 <script>
 import Formulario from './components/Formulario.vue';
-import Navbar from './components/Navbar.vue'; // Importa el componente Navbar
+import Navbar from './components/Navbar.vue';
+import Footer from './components/Footer.vue';
 import { ref, onMounted } from 'vue';
 
 export default {
   components: {
     Formulario,
     Navbar,
+    Footer,
   },
   setup() {
     const isDarkMode = ref(false);
