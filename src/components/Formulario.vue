@@ -56,6 +56,7 @@ import PasajerosForm from './PasajerosForm.vue';
 import VueloForm from './VueloForm.vue';
 import PagosForm from './PagosForm.vue';
 import * as bootstrap from 'bootstrap';
+import { nextTick } from 'vue';
 
 export default {
     components: {

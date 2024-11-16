@@ -146,6 +146,9 @@ export default {
 </script>
 
 <style scoped>
+.is-valid {
+    border-color:#198754 !important
+}
 .error {
     color: red;
 }
