@@ -3,35 +3,39 @@
     <div class="card">
         <div class="card-body">
             <h5 class="card-title">Datos del Pasajero</h5>
-            <div class="mb-3">
-                <label for="nombre" class="form-label">Nombre Completo:</label>
-                <input type="text" id="nombre" v-model.trim="internalData.nombre" @input="validateNombre"
-                    class="form-control" placeholder="Nombre Completo" />
-                <div v-if="nombreError" class="text-danger">{{ nombreError }}</div>
-            </div>
+            <form class="row g-3 needs-validation" novalidate @submit.prevent="submitForm">
+                <div class="mb-3">
+                    <label for="nombre" class="form-label">Nombre Completo:</label>
+                    <input type="text" id="nombre" v-model.trim="internalData.nombre" @input="validateNombre"
+                        class="form-control" :class="{ 'is-invalid': nombreError, 'is-valid': !nombreError && internalData.nombre }" placeholder="Nombre Completo" />
+                    <div v-if="nombreError" class="invalid-feedback">{{ nombreError }}</div>
+                </div>
 
-            <div class="mb-3">
-                <label for="dni" class="form-label">Número de Pasaporte/DNI (Argentina):</label>
-                <input type="text" id="dni" v-model.trim="internalData.dni" @input="validateDni" class="form-control"
-                    placeholder="DNI/Pasaporte" />
-                <div v-if="dniError" class="text-danger">{{ dniError }}</div>
-            </div>
+                <div class="mb-3">
+                    <label for="dni" class="form-label">Número de Pasaporte/DNI (Argentina):</label>
+                    <input type="text" id="dni" v-model.trim="internalData.dni" @input="validateDni" class="form-control"
+                        :class="{ 'is-invalid': dniError, 'is-valid': !dniError && internalData.dni }" placeholder="DNI/Pasaporte" />
+                    <div v-if="dniError" class="invalid-feedback">{{ dniError }}</div>
+                </div>
 
-            <div class="mb-3">
-                <label for="fechaNacimiento" class="form-label">Fecha de Nacimiento (dd/mm/yyyy):</label>
-                <input type="text" id="fechaNacimiento" v-model="internalData.fechaNacimiento"
-                    @input="validateFechaNacimiento" class="form-control" placeholder="dd/mm/yyyy" />
-                <div v-if="fechaNacimientoError" class="text-danger">{{ fechaNacimientoError }}</div>
-            </div>
+                <div class="mb-3">
+                    <label for="fechaNacimiento" class="form-label">Fecha de Nacimiento:</label>
+                    <input type="date" id="fechaNacimiento" v-model="internalData.fechaNacimiento"
+                        @input="validateFechaNacimiento" class="form-control"
+                        :class="{ 'is-invalid': fechaNacimientoError, 'is-valid': !fechaNacimientoError && internalData.fechaNacimiento }" />
+                    <div v-if="fechaNacimientoError" class="invalid-feedback">{{ fechaNacimientoError }}</div>
+                </div>
 
-            <div class="mb-3">
-                <label for="nacionalidad" class="form-label">Nacionalidad:</label>
-                <select id="nacionalidad" v-model="internalData.nacionalidad" class="form-select">
-                    <option value="" disabled>Selecciona tu nacionalidad</option>
-                    <option v-for="pais in paises" :key="pais.iso3" :value="pais.nameES"> {{ pais.nameES }} </option>
-                </select>
-                <div v-if="!internalData.nacionalidad" class="text-danger">Debes seleccionar una nacionalidad.</div>
-            </div>
+                <div class="mb-3">
+                    <label for="nacionalidad" class="form-label">Nacionalidad:</label>
+                    <select id="nacionalidad" v-model="internalData.nacionalidad" class="form-select"
+                        :class="{ 'is-invalid': !internalData.nacionalidad, 'is-valid': internalData.nacionalidad }">
+                        <option value="" disabled>Selecciona tu nacionalidad</option>
+                        <option v-for="pais in paises" :key="pais.iso3" :value="pais.nameES"> {{ pais.nameES }} </option>
+                    </select>
+                    <div v-if="!internalData.nacionalidad" class="invalid-feedback">Debes seleccionar una nacionalidad.</div>
+                </div>
+            </form>
         </div>
     </div>
 </template>
@@ -87,17 +91,12 @@ export default {
 
         const validateFechaNacimiento = () => {
             const inputDate = internalData.value.fechaNacimiento;
-            if (!/^\d{2}\/\d{2}\/\d{4}$/.test(inputDate)) {
-                fechaNacimientoError.value = 'Formato de fecha incorrecto (dd/mm/yyyy).';
+            if (!inputDate) {
+                fechaNacimientoError.value = 'Debes seleccionar una fecha de nacimiento.';
                 return;
             }
 
-            const parts = inputDate.split('/');
-            const day = parseInt(parts[0], 10);
-            const month = parseInt(parts[1], 10) - 1; // Los meses en JavaScript son de 0 a 11
-            const year = parseInt(parts[2], 10);
-
-            const date = new Date(year, month, day);
+            const date = new Date(inputDate);
 
             if (isNaN(date.getTime())) { // Verificar si la fecha es válida
                 fechaNacimientoError.value = 'Fecha inválida.';
@@ -118,6 +117,19 @@ export default {
             }
         };
 
+        const submitForm = () => {
+            // Aquí puedes agregar la lógica para validar todos los campos antes de enviar el formulario
+            validateNombre();
+            validateDni();
+            validateFechaNacimiento();
+
+            // Si no hay errores, puedes enviar el formulario
+            if (!nombreError.value && !dniError.value && !fechaNacimientoError.value && internalData.value.nacionalidad) {
+                // Aquí puedes agregar la lógica para enviar el formulario
+                console.log("Formulario enviado:", internalData.value);
+            }
+        };
+
         return {
             paises,
             internalData,
@@ -127,6 +139,7 @@ export default {
             validateNombre,
             validateDni,
             validateFechaNacimiento,
+            submitForm
         };
     },
 };
