@@ -6,7 +6,8 @@
             <div class="mb-3">
                 <label for="nombre" class="form-label">Nombre Completo:</label>
                 <input type="text" id="nombre" v-model.trim="internalData.nombre" @input="validateNombre"
-                    class="form-control" placeholder="Nombre Completo" />
+                :class="['form-control', {'is-valid': nombreIsValid, 'is-invalid': nombreError}]" 
+                placeholder="Nombre Completo" />
                 <div v-if="nombreError" class="text-danger">{{ nombreError }}</div>
             </div>
 
@@ -133,6 +134,9 @@ export default {
 </script>
 
 <style scoped>
+.is-valid {
+    border-color:#198754 !important
+}
 .error {
     color: red;
 }
