@@ -12,7 +12,7 @@
                             :class="{ 'is-valid': cardNumberValid, 'is-invalid': cardNumberError }" />
                         <img :src="cardTypeImage" v-if="cardTypeImage" alt="Card Type" class="card-logo mt-2">
                         <div v-if="cardNumberError" class="invalid-feedback">{{ cardNumberError }}</div>
-                        <div v-if="cardNumberValid" class="valid-feedback">Correcto!</div>
+                        <!--<div v-if="cardNumberValid" class="valid-feedback">Correcto!</div>-->
 
                     </div>
                 </div>
@@ -23,7 +23,7 @@
                             @input="validateExpiryDate" placeholder="MM/AA"
                             :class="{ 'is-valid': expiryDateValid, 'is-invalid': expiryDateError }" />
                         <div v-if="expiryDateError" class="invalid-feedback">{{ expiryDateError }}</div>
-                        <div v-if="expiryDateValid" class="valid-feedback">Correcto!</div>
+                       <!-- <div v-if="expiryDateValid" class="valid-feedback">Correcto!</div>-->
 
                     </div>
                     <div class="col-md-6">
@@ -31,7 +31,7 @@
                         <input type="text" class="form-control" id="cvv" v-model="internalData.cvv" @input="validateCvv"
                             placeholder="CVV" :class="{ 'is-valid': cvvValid, 'is-invalid': cvvError }" />
                         <div v-if="cvvError" class="invalid-feedback">{{ cvvError }}</div>
-                        <div v-if="cvvValid" class="valid-feedback">Correcto!</div>
+                       <!-- <div v-if="cvvValid" class="valid-feedback">Correcto!</div>-->
                     </div>
                 </div>
                 <div class="row mt-3">
@@ -41,7 +41,7 @@
                             @input="validateCardName" placeholder="Nombre Completo"
                             :class="{ 'is-valid': cardNameValid, 'is-invalid': cardNameError }" />
                         <div v-if="cardNameError" class="invalid-feedback">{{ cardNameError }}</div>
-                         <div v-if="cardNameValid" class="valid-feedback">Correcto!</div>
+                        <!-- <div v-if="cardNameValid" class="valid-feedback">Correcto!</div>--> 
                     </div>
                 </div>
             </div>
