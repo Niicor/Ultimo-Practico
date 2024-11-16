@@ -60,7 +60,6 @@ export default {
     emits: ['update:modelValue'],
 
     setup(props, { emit }) {
-
         const internalData = ref({ ...props.modelValue });
 
         const cardNumberError = ref('');
@@ -73,30 +72,33 @@ export default {
         const cvvValid = ref(false);
         const cardNameValid = ref(false);
 
-
         const cardType = ref(null);
         const cardTypeImage = ref(null);
 
-
-
         const detectCardType = () => {
             let number = internalData.value.cardNumber.replace(/\s/g, '');
+            let isValid = false; // Bandera para la validez del número
+
             if (/^4[0-9]{12}(?:[0-9]{3})?$/.test(number)) {
                 cardType.value = 'visa';
-                cardTypeImage.value = visaImage;  // Asigna la imagen importada
+                cardTypeImage.value = visaImage;
+                isValid = number.length === 16; // Visa: 16 dígitos
             } else if (/^5[1-5][0-9]{14}$/.test(number)) {
                 cardType.value = 'mastercard';
-                cardTypeImage.value = mastercardImage; // Asigna la imagen importada
+                cardTypeImage.value = mastercardImage;
+                isValid = number.length === 16; // Mastercard: 16 dígitos
             } else if (/^3[47][0-9]{13}$/.test(number)) {
                 cardType.value = 'amex';
-                cardTypeImage.value = amexImage; // Asigna la imagen importada
+                cardTypeImage.value = amexImage;
+                isValid = number.length === 15; // Amex: 15 dígitos
             } else {
                 cardType.value = null;
                 cardTypeImage.value = null;
             }
 
-            if (!/^[0-9]{16}$/.test(number)) {
-                cardNumberError.value = "El número de tarjeta debe tener 16 dígitos";
+
+            if (!isValid) {
+                cardNumberError.value = `El número de tarjeta ${cardType.value ? cardType.value : ''} debe tener ${cardType.value === 'amex' ? 15 : 16} dígitos`;
                 cardNumberValid.value = false;
             } else {
                 cardNumberError.value = "";
