@@ -2,20 +2,35 @@
 
 body {
     background-color: #f8f9fa;
-    /* Color de fondo claro por defecto */
     color: #212529;
-    /* Color de texto oscuro por defecto */
     transition: background-color 0.3s ease, color 0.3s ease;
-    /* Transición suave */
 }
 
 .dark-mode body {
     background-color: #343a40;
-    /* Color de fondo oscuro */
     color: #f8f9fa;
-    /* Color de texto claro */
 }
 
+/* Estilos del Navbar para modo oscuro */
+.dark-mode .navbar {
+    background-color: #343a40 !important;
+    /* !important para mayor prioridad */
+    color: #f8f9fa;
+}
+
+.dark-mode .navbar-brand {
+    color: #f8f9fa;
+}
+
+.dark-mode .navbar-toggler-icon {
+    filter: invert(1);
+    /* Invierte el color del icono */
+}
+
+.dark-mode .navbar-nav .nav-link {
+    /* si tienes enlaces en el navbar */
+    color: #f8f9fa;
+}
 
 /* Otros estilos globales que podrían necesitar ajuste para el modo oscuro */
 .dark-mode a {

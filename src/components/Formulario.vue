@@ -1,8 +1,6 @@
+<!-- src/components/Formulario.vue -->
 <template>
     <div class="container" :class="{ 'dark-mode': isDarkMode }">
-        <button @click="toggleDarkMode" class="btn btn-secondary mt-3 mb-3">
-            {{ isDarkMode ? 'Modo Claro' : 'Modo Oscuro' }}
-        </button>
 
         <form @submit.prevent="submitForm">
             <div class="row">
@@ -57,7 +55,6 @@
 import PasajerosForm from './PasajerosForm.vue';
 import VueloForm from './VueloForm.vue';
 import PagosForm from './PagosForm.vue';
-import { ref, onMounted, nextTick } from 'vue';
 import * as bootstrap from 'bootstrap';
 
 export default {
@@ -67,24 +64,7 @@ export default {
         PagosForm,
     },
     setup() {
-        const isDarkMode = ref(false);
-
-        const toggleDarkMode = () => {
-            isDarkMode.value = !isDarkMode.value;
-            localStorage.setItem('darkMode', isDarkMode.value);
-        };
-
-        onMounted(() => {
-            const storedDarkMode = localStorage.getItem('darkMode');
-            if (storedDarkMode !== null) {
-                isDarkMode.value = JSON.parse(storedDarkMode);
-            }
-        });
-
-        return {
-            isDarkMode,
-            toggleDarkMode,
-        };
+        return {};
     },
     data() {
         return {
@@ -184,6 +164,7 @@ export default {
 .dark-mode option {
     background-color: #454d55;
 }
+
 .dark-mode .modal-content {
     background-color: #454d55;
     /* Color de fondo oscuro para el contenido del modal */
