@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "baseUrl": ".", // Esto es importante para la resolución de rutas
+        "paths": {
+            "@/*": [
+                "src/*"
+            ] // Esto te permite usar alias de importación como @/components/MiComponente
+        }
+    },
+    "include": [
+        "src/**/*.vue",
+        "src/**/*.js"
+    ], // Incluye todos tus archivos .vue y .js
+    "exclude": [
+        "node_modules",
+        "dist"
+    ] // Excluye las carpetas node_modules y dist
+}

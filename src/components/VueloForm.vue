@@ -30,22 +30,30 @@
                 </div>
             </div>
 
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <label for="tipoVuelo">Tipo de Vuelo:</label>
+                    <select id="tipoVuelo" v-model="internalData.tipoVuelo" class="form-select">
+                        <option value="ida">Solo Ida</option>
+                        <option value="idaYVuelta">Ida y Vuelta</option>
+                    </select>
+                </div>
+            </div>
 
             <div class="row mt-3">
                 <div class="col-md-6">
                     <label for="fechaSalida" class="form-label">Fecha de Salida:</label>
                     <input type="date" id="fechaSalida" v-model="internalData.fechaSalida" class="form-control"
-                        @change="validateFechas">
+                        @change="validateFechas" />
                     <div v-if="fechaSalidaError" class="text-danger">{{ fechaSalidaError }}</div>
                 </div>
-                <div class="col-md-6">
+                <div v-if="internalData.tipoVuelo === 'idaYVuelta'" class="col-md-6">
                     <label for="fechaRegreso" class="form-label">Fecha de Regreso:</label>
                     <input type="date" id="fechaRegreso" v-model="internalData.fechaRegreso" class="form-control"
-                        @change="validateFechas">
+                        @change="validateFechas" />
                     <div v-if="fechaRegresoError" class="text-danger">{{ fechaRegresoError }}</div>
                 </div>
             </div>
-
 
             <div class="row mt-3">
                 <div class="col-md-6">
@@ -62,13 +70,10 @@
                 <div class="col-md-6">
                     <label for="numeroBoletos" class="form-label">Número de Boletos:</label>
                     <input type="number" id="numeroBoletos" v-model="internalData.numeroBoletos" class="form-control"
-                        min="1" max="10" @input="validateNumeroBoletos">
+                        min="1" max="10" @input="validateNumeroBoletos" />
                     <div v-if="numeroBoletosError" class="text-danger">{{ numeroBoletosError }}</div>
                 </div>
             </div>
-
-
-
         </div>
     </div>
 </template>
@@ -81,7 +86,10 @@ export default {
     emits: ['update:modelValue'],
 
     setup(props, { emit }) {
-        const internalData = ref({ ...props.modelValue });
+        const internalData = ref({
+            ...props.modelValue,
+            tipoVuelo: 'ida' // Valor por defecto
+        });
         const aeropuertos = ref([]);
 
         const ciudadOrigenError = ref('');
@@ -90,7 +98,6 @@ export default {
         const fechaRegresoError = ref('');
         const claseVueloError = ref('');
         const numeroBoletosError = ref('');
-
 
         onMounted(async () => {
             try {
@@ -104,7 +111,6 @@ export default {
                 alert("No se pudieron cargar los aeropuertos. Por favor, inténtalo de nuevo más tarde.");
             }
         });
-
 
         const validateOrigenDestino = () => {
             if (internalData.value.ciudadOrigen === internalData.value.ciudadDestino) {
@@ -125,14 +131,16 @@ export default {
                 fechaSalidaError.value = "";
             }
 
-            if (fechaRegreso && fechaRegreso <= fechaSalida) {
-                fechaRegresoError.value = "La fecha de regreso debe ser posterior a la fecha de salida.";
+            if (internalData.value.tipoVuelo === 'idaYVuelta') {
+                if (fechaRegreso && fechaRegreso <= fechaSalida) {
+                    fechaRegresoError.value = "La fecha de regreso debe ser posterior a la fecha de salida.";
+                } else {
+                    fechaRegresoError.value = "";
+                }
             } else {
                 fechaRegresoError.value = "";
             }
         };
-
-
 
         const validateNumeroBoletos = () => {
             const num = parseInt(internalData.value.numeroBoletos, 10);
