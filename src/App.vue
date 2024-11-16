@@ -1,7 +1,7 @@
 <!-- src/App.vue -->
 <template>
   <Navbar @toggle-dark-mode="toggleDarkMode" :is-dark-mode="isDarkMode" />
-  <Formulario />
+  <Formulario :is-dark-mode="isDarkMode" />
 </template>
 
 <script>

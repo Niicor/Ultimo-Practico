@@ -63,6 +63,9 @@ export default {
         VueloForm,
         PagosForm,
     },
+    props: {
+        isDarkMode: Boolean, // Recibe isDarkMode como prop
+    },
     setup() {
         return {};
     },
