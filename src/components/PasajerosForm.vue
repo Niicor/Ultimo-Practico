@@ -1,30 +1,37 @@
 <!-- src/components/PasajerosForm.vue -->
 <template>
-    <div class="card"> <!-- Envuelto en un card de Bootstrap -->
+    <div class="card">
         <div class="card-body">
-            <h5 class="card-title">Datos del Pasajero</h5> <!-- Título dentro del card -->
-            <label for="nombre">Nombre Completo:</label>
-            <input type="text" id="nombre" v-model.trim="internalData.nombre" @input="validateNombre"
-                placeholder="Nombre Completo" />
-            <div v-if="nombreError" class="error">{{ nombreError }}</div>
+            <h5 class="card-title">Datos del Pasajero</h5>
+            <div class="mb-3">
+                <label for="nombre" class="form-label">Nombre Completo:</label>
+                <input type="text" id="nombre" v-model.trim="internalData.nombre" @input="validateNombre"
+                    class="form-control" placeholder="Nombre Completo" />
+                <div v-if="nombreError" class="text-danger">{{ nombreError }}</div>
+            </div>
 
-            <label for="dni">Número de Pasaporte/DNI (Argentina):</label>
-            <input type="text" id="dni" v-model.trim="internalData.dni" @input="validateDni"
-                placeholder="DNI/Pasaporte" />
-            <div v-if="dniError" class="error">{{ dniError }}</div>
+            <div class="mb-3">
+                <label for="dni" class="form-label">Número de Pasaporte/DNI (Argentina):</label>
+                <input type="text" id="dni" v-model.trim="internalData.dni" @input="validateDni" class="form-control"
+                    placeholder="DNI/Pasaporte" />
+                <div v-if="dniError" class="text-danger">{{ dniError }}</div>
+            </div>
 
-            <label for="fechaNacimiento">Fecha de Nacimiento (dd/mm/yyyy):</label>
-            <input type="text" id="fechaNacimiento" v-model="internalData.fechaNacimiento"
-                @input="validateFechaNacimiento" placeholder="dd/mm/yyyy" />
-            <div v-if="fechaNacimientoError" class="error">{{ fechaNacimientoError }}</div>
+            <div class="mb-3">
+                <label for="fechaNacimiento" class="form-label">Fecha de Nacimiento (dd/mm/yyyy):</label>
+                <input type="text" id="fechaNacimiento" v-model="internalData.fechaNacimiento"
+                    @input="validateFechaNacimiento" class="form-control" placeholder="dd/mm/yyyy" />
+                <div v-if="fechaNacimientoError" class="text-danger">{{ fechaNacimientoError }}</div>
+            </div>
 
-            <label for="nacionalidad">Nacionalidad:</label>
-            <select id="nacionalidad" v-model="internalData.nacionalidad">
-                <option value="" disabled>Selecciona tu nacionalidad</option>
-                <option v-for="pais in paises" :key="pais.name.common" :value="pais.name.common">{{ pais.name.common }}
-                </option>
-            </select>
-            <div v-if="!internalData.nacionalidad" class="error">Debes seleccionar una nacionalidad.</div>
+            <div class="mb-3">
+                <label for="nacionalidad" class="form-label">Nacionalidad:</label>
+                <select id="nacionalidad" v-model="internalData.nacionalidad" class="form-select">
+                    <option value="" disabled>Selecciona tu nacionalidad</option>
+                    <option v-for="pais in paises" :key="pais.iso3" :value="pais.nameES"> {{ pais.nameES }} </option>
+                </select>
+                <div v-if="!internalData.nacionalidad" class="text-danger">Debes seleccionar una nacionalidad.</div>
+            </div>
         </div>
     </div>
 </template>
@@ -49,7 +56,9 @@ export default {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                paises.value = await response.json();
+                const data = await response.json();
+                // Asegura que 'paises' sea un array antes de asignarlo
+                paises.value = Array.isArray(data) ? data : [];
             } catch (error) {
                 console.error("Error al cargar países:", error);
                 alert("No se pudieron cargar las nacionalidades. Por favor, inténtalo de nuevo más tarde.");

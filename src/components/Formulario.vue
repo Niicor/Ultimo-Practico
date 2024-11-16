@@ -1,32 +1,53 @@
 <!-- src/components/Formulario.vue -->
 <template>
     <div class="container" :class="{ 'dark-mode': isDarkMode }">
-        <button @click="toggleDarkMode" class="btn btn-secondary mt-3 mb-3">
-            {{ isDarkMode ? 'Modo Claro' : 'Modo Oscuro' }}
-        </button>
 
         <form @submit.prevent="submitForm">
             <div class="row">
-                <div class="col-md-4"> <!-- Pasajeros - Columna de 4 en pantallas medianas y grandes -->
+                <div class="col-md-4">
                     <PasajerosForm v-model="pasajeroData" />
                 </div>
-                <div class="col-md-4"> <!-- Vuelo - Columna de 4 en pantallas medianas y grandes -->
+                <div class="col-md-4">
                     <VueloForm v-model="vueloData" />
                 </div>
-                <div class="col-md-4"> <!-- Pagos - Columna de 4 en pantallas medianas y grandes -->
+                <div class="col-md-4">
                     <PagosForm v-model="pagoData" />
                 </div>
             </div>
 
-            <div class="mt-3" v-if="formHasErrors">
-                <div class="alert alert-danger" role="alert">El formulario tiene errores. Por favor, corrígelos para
-                    continuar.</div>
+            <div v-if="formHasErrors" class="alert alert-danger mt-3" role="alert">
+                El formulario tiene errores. Por favor, corrígelos para continuar.
             </div>
-            <button type="submit" :disabled="!isFormValid" class="btn btn-primary mt-3">Reservar Vuelo</button>
+
+            <button type="submit" :disabled="!isFormValid" class="btn btn-primary mt-3">
+                Reservar Vuelo
+            </button>
+
             <div v-if="!isFormValid" class="alert alert-danger mt-3" role="alert">
                 Completa todos los campos correctamente para habilitar el botón.
             </div>
         </form>
+
+        <!-- Modal de Bootstrap -->
+        <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel"
+            aria-hidden="true" ref="confirmationModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmationModalLabel">
+                            {{ modalTitle }}
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">{{ modalMessage }}</div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Cerrar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -34,7 +55,7 @@
 import PasajerosForm from './PasajerosForm.vue';
 import VueloForm from './VueloForm.vue';
 import PagosForm from './PagosForm.vue';
-import { ref, onMounted } from 'vue';
+import * as bootstrap from 'bootstrap';
 
 export default {
     components: {
@@ -42,33 +63,19 @@ export default {
         VueloForm,
         PagosForm,
     },
+    props: {
+        isDarkMode: Boolean, // Recibe isDarkMode como prop
+    },
     setup() {
-        const isDarkMode = ref(false);
-
-        const toggleDarkMode = () => {
-            isDarkMode.value = !isDarkMode.value;
-            // Guardar la preferencia del usuario en localStorage (opcional)
-            localStorage.setItem('darkMode', isDarkMode.value);
-        };
-
-        // Cargar la preferencia del usuario al iniciar (opcional)
-        onMounted(() => {
-            const storedDarkMode = localStorage.getItem('darkMode');
-            if (storedDarkMode !== null) {
-                isDarkMode.value = JSON.parse(storedDarkMode); // Convertir a booleano
-            }
-        });
-
-        return {
-            isDarkMode,
-            toggleDarkMode,
-        };
+        return {};
     },
     data() {
         return {
             pasajeroData: {},
             vueloData: {},
             pagoData: {},
+            modalTitle: '',
+            modalMessage: '',
         };
     },
     computed: {
@@ -79,14 +86,12 @@ export default {
             return !this.isFormValid;
         },
         isPasajeroValid() {
-            // ... (Lógica de validación de PasajerosForm)
             for (const key in this.pasajeroData) {
                 if (this.pasajeroData[key] === '' || this.pasajeroData[key] === null || (key === 'nombre' && this.pasajeroData[key].length < 3)) return false;
             }
             return true;
         },
         isVueloValid() {
-            // ... (Lógica de validación de VueloForm)
             for (const key in this.vueloData) {
                 if (!this.vueloData[key]) return false;
             }
@@ -97,11 +102,10 @@ export default {
             return new Date(this.vueloData.fechaSalida) > new Date();
         },
         isFechaRegresoValid() {
-            if (!this.vueloData.fechaRegreso) return true; // Si no hay fecha de regreso, es válido
+            if (!this.vueloData.fechaRegreso) return true;
             return new Date(this.vueloData.fechaRegreso) > new Date(this.vueloData.fechaSalida);
         },
         isPagoValid() {
-            // ... (Lógica de validación de PagosForm)
             for (const key in this.pagoData) {
                 if (!this.pagoData[key]) return false;
             }
@@ -111,13 +115,27 @@ export default {
     methods: {
         submitForm() {
             if (this.isFormValid) {
-                // Aquí iría la lógica para enviar los datos
+                this.modalTitle = 'Reserva Confirmada';
+                this.modalMessage = '¡Tu reserva se ha realizado con éxito!';
+                this.showModal();
+
                 console.log('Datos del formulario:', {
                     pasajero: this.pasajeroData,
                     vuelo: this.vueloData,
                     pago: this.pagoData,
                 });
+            } else {
+                this.modalTitle = 'Error en el Formulario';
+                this.modalMessage = 'Por favor, completa todos los campos correctamente antes de enviar el formulario.';
+                this.showModal();
             }
+        },
+        showModal() {
+            nextTick(() => {
+                const modalElement = this.$refs.confirmationModal;
+                const modal = new bootstrap.Modal(modalElement);
+                modal.show();
+            });
         },
     },
 };
@@ -126,25 +144,19 @@ export default {
 <style scoped>
 .dark-mode {
     background-color: #343a40;
-    /* Color de fondo oscuro */
     color: #f8f9fa;
-    /* Color de texto claro */
 }
 
 .dark-mode .card {
     background-color: #454d55;
-    /* Color de fondo oscuro para las cards */
     color: #f8f9fa;
-    /* Color de texto claro en las cards */
 }
 
-/* Estilos adicionales para elementos específicos en modo oscuro */
 .dark-mode label,
 .dark-mode input,
 .dark-mode select,
 .dark-mode option {
     color: #f8f9fa;
-    /* Ajustar el color del texto en inputs, labels, etc. */
     background-color: #454d55;
 }
 
@@ -154,5 +166,30 @@ export default {
 
 .dark-mode option {
     background-color: #454d55;
+}
+
+.dark-mode .modal-content {
+    background-color: #454d55;
+    /* Color de fondo oscuro para el contenido del modal */
+    color: #f8f9fa;
+    /* Color de texto claro para el contenido del modal */
+}
+
+.dark-mode .modal-header,
+.dark-mode .modal-footer {
+    border-color: #343a40;
+    /* Color de borde oscuro para header y footer */
+}
+
+.dark-mode .modal-title {
+    color: #f8f9fa;
+    /* Asegúrate de que el título también sea claro */
+}
+
+.dark-mode .btn-secondary {
+    /* ajusta los botones de cerrar dentro del modal */
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: #f8f9fa;
 }
 </style>
