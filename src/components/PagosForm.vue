@@ -51,6 +51,9 @@
 
 <script>
 import { ref, watch, computed } from 'vue';
+import visaImage from '../assets/visa.png'; // Importa las imágenes
+import mastercardImage from '../assets/mastercard.png';
+import amexImage from '../assets/amex.png';
 
 export default {
     props: ['modelValue'],
@@ -80,13 +83,13 @@ export default {
             let number = internalData.value.cardNumber.replace(/\s/g, '');
             if (/^4[0-9]{12}(?:[0-9]{3})?$/.test(number)) {
                 cardType.value = 'visa';
-                cardTypeImage.value = '/src/assets/visa.png';
+                cardTypeImage.value = visaImage;  // Asigna la imagen importada
             } else if (/^5[1-5][0-9]{14}$/.test(number)) {
                 cardType.value = 'mastercard';
-                cardTypeImage.value = '/src/assets/mastercard.png';
+                cardTypeImage.value = mastercardImage; // Asigna la imagen importada
             } else if (/^3[47][0-9]{13}$/.test(number)) {
                 cardType.value = 'amex';
-                cardTypeImage.value = '/src/assets/amex.png';
+                cardTypeImage.value = amexImage; // Asigna la imagen importada
             } else {
                 cardType.value = null;
                 cardTypeImage.value = null;
