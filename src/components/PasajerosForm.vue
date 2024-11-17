@@ -7,14 +7,18 @@
                 <div class="mb-3">
                     <label for="nombre" class="form-label">Nombre Completo:</label>
                     <input type="text" id="nombre" v-model.trim="internalData.nombre" @input="validateNombre"
-                        class="form-control" :class="{ 'is-invalid': nombreError, 'is-valid': !nombreError && internalData.nombre }" placeholder="Nombre Completo" />
+                        class="form-control"
+                        :class="{ 'is-invalid': nombreError, 'is-valid': !nombreError && internalData.nombre }"
+                        placeholder="Nombre Completo" />
                     <div v-if="nombreError" class="invalid-feedback">{{ nombreError }}</div>
                 </div>
 
                 <div class="mb-3">
                     <label for="dni" class="form-label">Número de Pasaporte/DNI (Argentina):</label>
-                    <input type="text" id="dni" v-model.trim="internalData.dni" @input="validateDni" class="form-control"
-                        :class="{ 'is-invalid': dniError, 'is-valid': !dniError && internalData.dni }" placeholder="DNI/Pasaporte" />
+                    <input type="text" id="dni" v-model.trim="internalData.dni" @input="validateDni"
+                        class="form-control"
+                        :class="{ 'is-invalid': dniError, 'is-valid': !dniError && internalData.dni }"
+                        placeholder="DNI/Pasaporte" />
                     <div v-if="dniError" class="invalid-feedback">{{ dniError }}</div>
                 </div>
 
@@ -22,7 +26,8 @@
                     <label for="fechaNacimiento" class="form-label">Fecha de Nacimiento:</label>
                     <input type="date" id="fechaNacimiento" v-model="internalData.fechaNacimiento"
                         @input="validateFechaNacimiento" class="form-control"
-                        :class="{ 'is-invalid': fechaNacimientoError, 'is-valid': !fechaNacimientoError && internalData.fechaNacimiento }" />
+                        :class="{ 'is-invalid': fechaNacimientoError, 'is-valid': !fechaNacimientoError && internalData.fechaNacimiento }"
+                        :max="maxDate" />
                     <div v-if="fechaNacimientoError" class="invalid-feedback">{{ fechaNacimientoError }}</div>
                 </div>
 
@@ -31,9 +36,11 @@
                     <select id="nacionalidad" v-model="internalData.nacionalidad" class="form-select"
                         :class="{ 'is-invalid': !internalData.nacionalidad, 'is-valid': internalData.nacionalidad }">
                         <option value="" disabled>Selecciona tu nacionalidad</option>
-                        <option v-for="pais in paises" :key="pais.iso3" :value="pais.nameES"> {{ pais.nameES }} </option>
+                        <option v-for="pais in paises" :key="pais.iso3" :value="pais.nameES"> {{ pais.nameES }}
+                        </option>
                     </select>
-                    <div v-if="!internalData.nacionalidad" class="invalid-feedback">Debes seleccionar una nacionalidad.</div>
+                    <div v-if="!internalData.nacionalidad" class="invalid-feedback">Debes seleccionar una nacionalidad.
+                    </div>
                 </div>
             </form>
         </div>
@@ -53,6 +60,7 @@ export default {
         const nombreError = ref('');
         const dniError = ref('');
         const fechaNacimientoError = ref('');
+        const maxDate = ref('');
 
         onMounted(async () => {
             try {
@@ -67,6 +75,10 @@ export default {
                 console.error("Error al cargar países:", error);
                 alert("No se pudieron cargar las nacionalidades. Por favor, inténtalo de nuevo más tarde.");
             }
+
+            // Calcular la fecha máxima permitida (fecha actual)
+            const today = new Date();
+            maxDate.value = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
         });
 
         watch(internalData, (newValue) => {
@@ -112,6 +124,8 @@ export default {
 
             if (age < 18) {
                 fechaNacimientoError.value = 'Debes ser mayor de 18 años.';
+            } else if (age > 115) {  // Nueva validación
+                fechaNacimientoError.value = 'La edad máxima permitida es 115 años.';
             } else {
                 fechaNacimientoError.value = '';
             }
@@ -136,6 +150,7 @@ export default {
             nombreError,
             dniError,
             fechaNacimientoError,
+            maxDate,
             validateNombre,
             validateDni,
             validateFechaNacimiento,
@@ -147,8 +162,9 @@ export default {
 
 <style scoped>
 .is-valid {
-    border-color:#198754 !important
+    border-color: #198754 !important
 }
+
 .error {
     color: red;
 }

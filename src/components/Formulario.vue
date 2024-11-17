@@ -1,7 +1,6 @@
 <!-- src/components/Formulario.vue -->
 <template>
     <div class="container" :class="{ 'dark-mode': isDarkMode }">
-
         <form @submit.prevent="submitForm">
             <div class="row">
                 <div class="col-md-4">
@@ -16,17 +15,21 @@
             </div>
 
             <div v-if="formHasErrors" class="alert alert-danger mt-3" role="alert">
-                El formulario tiene errores. Por favor, corrígelos para continuar.
+                * El formulario tiene errores. Por favor, corrígelos para continuar.
+            </div>
+
+            <div v-if="!isFormValid" class="alert alert-danger mt-3" role="alert">
+                * Completa todos los campos correctamente para habilitar el botón.
             </div>
 
             <button type="submit" :disabled="!isFormValid" class="btn btn-primary mt-3">
                 Reservar Vuelo
             </button>
-
-            <div v-if="!isFormValid" class="alert alert-danger mt-3" role="alert">
-                Completa todos los campos correctamente para habilitar el botón.
-            </div>
         </form>
+
+        <!-- Resumen de la Reserva -->
+        <ResumenReserva v-if="showModalResumen" :pasajero="pasajeroData" :vuelo="vueloData" :pago="pagoData"
+            :is-dark-mode="isDarkMode" />
 
         <!-- Modal de Bootstrap -->
         <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel"
@@ -55,6 +58,7 @@
 import PasajerosForm from './PasajerosForm.vue';
 import VueloForm from './VueloForm.vue';
 import PagosForm from './PagosForm.vue';
+import ResumenReserva from './ResumenReserva.vue'; // Importar el componente ResumenReserva
 import * as bootstrap from 'bootstrap';
 import { nextTick } from 'vue';
 
@@ -63,12 +67,10 @@ export default {
         PasajerosForm,
         VueloForm,
         PagosForm,
+        ResumenReserva, // Registrar el componente ResumenReserva
     },
     props: {
         isDarkMode: Boolean, // Recibe isDarkMode como prop
-    },
-    setup() {
-        return {};
     },
     data() {
         return {
@@ -77,6 +79,7 @@ export default {
             pagoData: {},
             modalTitle: '',
             modalMessage: '',
+            showModalResumen: false, // Nueva variable para controlar la visibilidad del resumen
         };
     },
     computed: {
@@ -119,6 +122,7 @@ export default {
                 this.modalTitle = 'Reserva Confirmada';
                 this.modalMessage = '¡Tu reserva se ha realizado con éxito!';
                 this.showModal();
+                this.showModalResumen = true; // Mostrar el resumen de la reserva
 
                 console.log('Datos del formulario:', {
                     pasajero: this.pasajeroData,
@@ -171,24 +175,19 @@ export default {
 
 .dark-mode .modal-content {
     background-color: #454d55;
-    /* Color de fondo oscuro para el contenido del modal */
     color: #f8f9fa;
-    /* Color de texto claro para el contenido del modal */
 }
 
 .dark-mode .modal-header,
 .dark-mode .modal-footer {
     border-color: #343a40;
-    /* Color de borde oscuro para header y footer */
 }
 
 .dark-mode .modal-title {
     color: #f8f9fa;
-    /* Asegúrate de que el título también sea claro */
 }
 
 .dark-mode .btn-secondary {
-    /* ajusta los botones de cerrar dentro del modal */
     background-color: #6c757d;
     border-color: #6c757d;
     color: #f8f9fa;
