@@ -2,29 +2,15 @@
 <template>
     <div class="card mt-3" :class="{ 'dark-mode': isDarkMode }">
         <div class="card-body">
-            <h5 class="card-title">Costo del Viaje</h5>
+            <h5 class="card-title">Costo del Viaje (USD)</h5>
+            <h6 class="card-subtitle mb-2 text-info" >(Precios en dólares estadounidenses)</h6>
 
-            <table v-if="costoBase" class="table table-bordered">
+            <table v-if="costoBase" class="table table-bordered table-striped">
                 <tbody>
-                    <tr>
-                        <td>Costo base por trayecto:</td>
-                        <td>$ {{ costoBase.toFixed(2) }}</td>
-                    </tr>
-                    <tr v-if="vueloData.tipoVuelo === 'idaYVuelta'">
-                        <td>Costo ida y vuelta:</td>
-                        <td>$ {{ (costoBase * 2).toFixed(2) }}</td>
-                    </tr>
-                    <tr>
-                        <td>Costo por clase ({{ vueloData.claseVuelo }}):</td> <!-- Mostrar la clase seleccionada -->
-                        <td>$ {{ costoClase.toFixed(2) }}</td>
-                    </tr>
-                    <tr>
-                        <td>Costo por boleto:</td>
-                        <td>$ {{ costoPorBoleto.toFixed(2) }}</td>
-                    </tr>
-                    <tr>
-                        <td>Costo total ({{ vueloData.numeroBoletos }} boletos):</td>
-                        <td>$ {{ costoTotal.toFixed(2) }}</td>
+                    <tr v-for="(item, index) in costos" :key="index"
+                        :class="{ 'table-active': index % 2 === 1, 'total-row': item.name === 'Costo total' }">
+                        <td>{{ item.name }}<span v-if="item.showBoletos"> ({{ item.boletos }} boletos)</span>:</td>
+                        <td>USD $ {{ item.costo.toFixed(2) }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -107,31 +93,42 @@ export default {
             watcher(); // Detener el watch al destruir el componente
         });
 
-        const costoClase = computed(() => {
-            let multiplicador = 1;
+        const costoExtraClase = computed(() => {
+            let multiplicador = 0; // Inicializa en 0 para solo el extra
             switch (props.vueloData.claseVuelo) {
                 case 'Ejecutiva':
-                    multiplicador = 1.5;
+                    multiplicador = 0.37; // 1.5 - 1 = 0.5
                     break;
                 case 'Primera Clase':
-                    multiplicador = 2;
+                    multiplicador = 1.13; // 2 - 1 = 1
                     break;
             }
             return costoBase.value * multiplicador;
         });
 
-        const costoPorBoleto = computed(() => costoClase.value);
+        const costoPorBoleto = computed(() => costoBase.value + costoExtraClase.value);
+
+        const costos = computed(() => {
+            return [
+                { name: 'Costo base por trayecto', costo: costoBase.value, boletos: '', showBoletos: false },
+                { name: 'Costo ida y vuelta', costo: costoBase.value * (props.vueloData.tipoVuelo === 'idaYVuelta' ? 2 : 0), boletos: '', showBoletos: false },
+                { name: `Costo extra por clase (${props.vueloData.claseVuelo})`, costo: costoExtraClase.value, boletos: '', showBoletos: false },
+                { name: 'Costo por boleto', costo: costoPorBoleto.value, boletos: '', showBoletos: false },
+                { name: 'Costo total', costo: costoTotal.value, boletos: props.vueloData.numeroBoletos, showBoletos: true },
+            ].filter(item => props.vueloData.tipoVuelo !== 'ida' || item.name !== 'Costo ida y vuelta');
+        });
 
         const costoTotal = computed(() => costoPorBoleto.value * props.vueloData.numeroBoletos);
 
         return {
             aeropuertos,
             costoBase,
-            costoClase,
+            costoExtraClase,
             costoPorBoleto,
             costoTotal,
             calcularDistancia,
             calcularCostoBase,
+            costos, // Retorna el nuevo computed property
         };
     },
 };
@@ -165,5 +162,36 @@ export default {
 
 .dark-mode h5 {
     color: white;
+}
+
+/* Resaltado de la fila del costo total */
+.total-row {
+    font-weight: bold;
+    background-color: #d1e7dd;
+    /* Verde claro para modo claro */
+    color: #198754;
+}
+
+.dark-mode .total-row {
+    background-color: #212f3c;
+    /* Un tono más oscuro para el modo oscuro */
+    color: #5cb85c;
+    /* Cambia el texto a verde para el modo oscuro*/
+}
+
+/* Estilo cebra para filas impares */
+.table-striped>tbody>tr:nth-of-type(odd)>* {
+    --bs-table-accent-bg: rgba(0, 0, 0, 0.05);
+    color: var(--bs-table-striped-color);
+}
+
+.dark-mode .table-striped>tbody>tr:nth-of-type(odd)>* {
+    --bs-table-accent-bg: rgba(255, 255, 255, 0.05);
+    /* Para modo oscuro */
+}
+
+.dark-mode .table>:not(caption)>*>* {
+    border-color: #454d55;
+    /* Ajusta el color de borde en modo oscuro si es necesario */
 }
 </style>

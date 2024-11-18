@@ -4,17 +4,35 @@
         <form @submit.prevent="submitForm">
             <div class="row">
                 <div class="col-md-6">
-                    <PasajerosForm v-model="pasajeroData" />
+                    <div class="card mb-3"> <!-- Tarjeta para PasajerosForm -->
+                        <div class="card-body">
+                            <PasajerosForm v-model="pasajeroData" />
+                        </div>
+                    </div>
                 </div>
                 <div class="col-md-6">
-                    <VueloForm v-model="vueloData" />
+                    <div class="card mb-3"> <!-- Tarjeta para VueloForm -->
+                        <div class="card-body">
+                            <VueloForm v-model="vueloData" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card mb-3"> <!-- Tarjeta para CostoViaje -->
+                        <div class="card-body">
+                            <CostoViaje v-if="vueloData.ciudadOrigen && vueloData.ciudadDestino" :vueloData="vueloData"
+                                :is-dark-mode="isDarkMode" ref="costoViaje" />
+                        </div>
+                    </div>
                 </div>
                 <div class="col-md-6">
-                    <CostoViaje v-if="vueloData.ciudadOrigen && vueloData.ciudadDestino" :vueloData="vueloData"
-                        :is-dark-mode="isDarkMode" ref="costoViaje" />
-                </div>
-                <div class="col-md-6">
-                    <PagosForm v-model="pagoData" />
+                    <div class="card mb-3"> <!-- Tarjeta para PagosForm -->
+                        <div class="card-body">
+                            <PagosForm v-model="pagoData" />
+                        </div>
+                    </div>
                 </div>
             </div>
 
