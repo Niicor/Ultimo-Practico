@@ -8,7 +8,8 @@
                 <div class="col-md-6">
                     <label for="ciudadOrigen" class="form-label">Ciudad de Origen:</label>
                     <select id="ciudadOrigen" v-model="internalData.ciudadOrigen" class="form-select"
-                        :class="{ 'is-invalid': ciudadOrigenError, 'is-valid': !ciudadOrigenError && internalData.ciudadOrigen }" @change="validateOrigenDestino">
+                        :class="{ 'is-invalid': ciudadOrigenError, 'is-valid': !ciudadOrigenError && internalData.ciudadOrigen }"
+                        @change="validateOrigenDestino">
                         <option value="" disabled>Selecciona una ciudad de origen</option>
                         <option v-for="aeropuerto in aeropuertos" :key="aeropuerto.code" :value="aeropuerto.city">
                             {{ aeropuerto.city }} ({{ aeropuerto.code }})
@@ -20,7 +21,8 @@
                 <div class="col-md-6">
                     <label for="ciudadDestino" class="form-label">Ciudad de Destino:</label>
                     <select id="ciudadDestino" v-model="internalData.ciudadDestino" class="form-select"
-                        :class="{ 'is-invalid': ciudadDestinoError, 'is-valid': !ciudadDestinoError && internalData.ciudadDestino }" @change="validateOrigenDestino">
+                        :class="{ 'is-invalid': ciudadDestinoError, 'is-valid': !ciudadDestinoError && internalData.ciudadDestino }"
+                        @change="validateOrigenDestino">
                         <option value="" disabled>Selecciona una ciudad de destino</option>
                         <option v-for="aeropuerto in aeropuertos" :key="aeropuerto.code" :value="aeropuerto.city">
                             {{ aeropuerto.city }} ({{ aeropuerto.code }})
@@ -29,9 +31,10 @@
                     <div v-if="ciudadDestinoError" class="invalid-feedback">{{ ciudadDestinoError }}</div>
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-md-12">
                     <label for="tipoVuelo">Tipo de Vuelo:</label>
-                    <select id="tipoVuelo" v-model="internalData.tipoVuelo" class="form-select">
+                    <select id="tipoVuelo" v-model="internalData.tipoVuelo" class="form-select"
+                        @change="validateFechas">
                         <option value="ida">Solo Ida</option>
                         <option value="idaYVuelta">Ida y Vuelta</option>
                     </select>
@@ -40,14 +43,16 @@
                 <div class="col-md-6">
                     <label for="fechaSalida" class="form-label">Fecha de Salida:</label>
                     <input type="date" id="fechaSalida" v-model="internalData.fechaSalida" class="form-control"
-                        :class="{ 'is-invalid': fechaSalidaError, 'is-valid': !fechaSalidaError && internalData.fechaSalida }" @change="validateFechas" />
+                        :class="{ 'is-invalid': fechaSalidaError, 'is-valid': !fechaSalidaError && internalData.fechaSalida }"
+                        @change="validateFechas" />
                     <div v-if="fechaSalidaError" class="invalid-feedback">{{ fechaSalidaError }}</div>
                 </div>
 
-                <div v-if="internalData.tipoVuelo === 'idaYVuelta'" class="col-md-6">
+                <div class="col-md-6" v-show="internalData.tipoVuelo === 'idaYVuelta'">
                     <label for="fechaRegreso" class="form-label">Fecha de Regreso:</label>
                     <input type="date" id="fechaRegreso" v-model="internalData.fechaRegreso" class="form-control"
-                        :class="{ 'is-invalid': fechaRegresoError, 'is-valid': !fechaRegresoError && internalData.fechaRegreso }" @change="validateFechas" />
+                        :class="{ 'is-invalid': fechaRegresoError, 'is-valid': !fechaRegresoError && internalData.fechaRegreso }"
+                        @change="validateFechas" />
                     <div v-if="fechaRegresoError" class="invalid-feedback">{{ fechaRegresoError }}</div>
                 </div>
 
@@ -66,9 +71,11 @@
                 <div class="col-md-6">
                     <label for="numeroBoletos" class="form-label">Número de Boletos:</label>
                     <input type="number" id="numeroBoletos" v-model="internalData.numeroBoletos" class="form-control"
-                        :class="{ 'is-invalid': numeroBoletosError, 'is-valid': !numeroBoletosError && internalData.numeroBoletos }" min="1" max="10" @input="validateNumeroBoletos" />
+                        :class="{ 'is-invalid': numeroBoletosError, 'is-valid': !numeroBoletosError && internalData.numeroBoletos }"
+                        min="1" max="10" @input="validateNumeroBoletos" />
                     <div v-if="numeroBoletosError" class="invalid-feedback">{{ numeroBoletosError }}</div>
                 </div>
+
             </form>
         </div>
     </div>
@@ -148,14 +155,11 @@ export default {
         };
 
         const submitForm = () => {
-            // Aquí puedes agregar la lógica para validar todos los campos antes de enviar el formulario
             validateOrigenDestino();
             validateFechas();
             validateNumeroBoletos();
 
-            // Si no hay errores, puedes enviar el formulario
             if (!ciudadOrigenError.value && !ciudadDestinoError.value && !fechaSalidaError.value && !fechaRegresoError.value && !numeroBoletosError.value) {
-                // Aquí puedes agregar la lógica para enviar el formulario
                 console.log("Formulario enviado:", internalData.value);
             }
         };
