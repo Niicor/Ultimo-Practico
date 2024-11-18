@@ -4,55 +4,49 @@
         <form @submit.prevent="submitForm">
             <div class="row">
                 <div class="col-md-6">
-                    <div class="card mb-3"> <!-- Tarjeta para PasajerosForm -->
+                    <div class="card mb-3">
                         <div class="card-body">
-                            <PasajerosForm v-model="pasajeroData" />
+                            <PasajerosForm v-model="pasajeroData" @update:modelValue="updateFormValidity" />
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="card mb-3"> <!-- Tarjeta para VueloForm -->
+                    <div class="card mb-3">
                         <div class="card-body">
-                            <VueloForm v-model="vueloData" />
+                            <VueloForm v-model="vueloData" @update:modelValue="updateFormValidity" />
                         </div>
                     </div>
                 </div>
             </div>
             <div class="row">
                 <div class="col-md-6">
-                    <div class="card mb-3"> <!-- Tarjeta para CostoViaje -->
+                    <div class="card mb-3">
                         <div class="card-body">
                             <CostoViaje v-if="vueloData.ciudadOrigen && vueloData.ciudadDestino" :vueloData="vueloData"
-                                :is-dark-mode="isDarkMode" ref="costoViajeRef" /> <!-- Asignar la ref aquí -->
+                                :is-dark-mode="isDarkMode" ref="costoViajeRef" />
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="card mb-3"> <!-- Tarjeta para PagosForm -->
+                    <div class="card mb-3">
                         <div class="card-body">
-                            <PagosForm v-model="pagoData" />
+                            <PagosForm v-model="pagoData" @update:modelValue="updateFormValidity" />
                         </div>
                     </div>
                 </div>
             </div>
-
+            <ResumenReserva :pasajero="pasajeroData" :vuelo="vueloData" :pago="pagoData" :is-dark-mode="isDarkMode"
+                :costo-total="costoTotal" />
             <div v-if="formHasErrors" class="alert alert-danger mt-3" role="alert">
                 * El formulario tiene errores. Por favor, corrígelos para continuar.
             </div>
-
-            <div v-if="!isFormValid" class="alert alert-danger mt-3" role="alert">
+            <div v-if="!isFormValid && !formHasErrors" class="alert alert-danger mt-3" role="alert">
                 * Completa todos los campos correctamente para habilitar el botón.
             </div>
-
-            <button type="submit" :disabled="!isFormValid" class="btn btn-primary mt-3">
+            <button type="submit" :disabled="!isFormValid || formHasErrors" class="btn btn-primary mt-3">
                 Reservar Vuelo
             </button>
         </form>
-
-        <ResumenReserva v-if="showModalResumen" :pasajero="pasajeroData" :vuelo="vueloData" :pago="pagoData"
-            :is-dark-mode="isDarkMode" :costo-total="costoTotal" /> <!-- Pasar costoTotal como prop -->
-
-        <!-- Modal de Bootstrap -->
         <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel"
             aria-hidden="true">
             <div class="modal-dialog">
@@ -76,9 +70,9 @@ import PasajerosForm from './PasajerosForm.vue';
 import VueloForm from './VueloForm.vue';
 import CostoViaje from './CostoViaje.vue';
 import PagosForm from './PagosForm.vue';
-import ResumenReserva from './ResumenReserva.vue'; // Importar el componente ResumenReserva
+import ResumenReserva from './ResumenReserva.vue';
 import * as bootstrap from 'bootstrap';
-import { ref, nextTick, computed, onMounted } from 'vue';
+import { ref, nextTick, computed, onMounted, watch } from 'vue';
 
 export default {
     components: {
@@ -89,7 +83,7 @@ export default {
         ResumenReserva,
     },
     props: {
-        isDarkMode: Boolean, // Recibe isDarkMode como prop
+        isDarkMode: Boolean,
     },
     setup(props) {
         const pasajeroData = ref({});
@@ -97,20 +91,24 @@ export default {
         const pagoData = ref({});
         const modalTitle = ref('');
         const modalMessage = ref('');
-        const showModalResumen = ref(false); // Nueva variable para controlar la visibilidad del resumen
-        const costoViajeRef = ref(null); // Ref para el componente CostoViaje
+        const costoViajeRef = ref(null);
 
         const costoTotal = computed(() => {
-            // Acceder a costoTotal usando la ref
             return costoViajeRef.value ? costoViajeRef.value.costoTotal : 0;
         });
 
-        const isFormValid = computed(() => {
-            return isPasajeroValid.value && isVueloValid.value && isPagoValid.value;
-        });
+        const isFormValid = ref(false);
+        const formHasErrors = ref(false);
 
-        const formHasErrors = computed(() => {
-            return !isFormValid.value;
+        const updateFormValidity = () => {
+            formHasErrors.value = Object.values({ ...pasajeroData.value, ...vueloData.value, ...pagoData.value }).some(
+                value => value === "" || value === null || value === undefined
+            );
+            isFormValid.value = !formHasErrors.value && isPasajeroValid.value && isVueloValid.value && isPagoValid.value;
+        };
+
+        watch([pasajeroData, vueloData, pagoData], () => {
+            updateFormValidity();
         });
 
         const isPasajeroValid = computed(() => {
@@ -149,13 +147,6 @@ export default {
                 modalTitle.value = 'Reserva Confirmada';
                 modalMessage.value = '¡Tu reserva se ha realizado con éxito!';
                 showModal();
-                showModalResumen.value = true; // Mostrar el resumen de la reserva
-
-                console.log('Datos del formulario:', {
-                    pasajero: pasajeroData.value,
-                    vuelo: vueloData.value,
-                    pago: pagoData.value,
-                });
             } else {
                 modalTitle.value = 'Error en el Formulario';
                 modalMessage.value = 'Por favor, completa todos los campos correctamente antes de enviar el formulario.';
@@ -165,14 +156,13 @@ export default {
 
         const showModal = () => {
             nextTick(() => {
-                const modalElement = document.getElementById('confirmationModal'); // Obtén el elemento por ID
+                const modalElement = document.getElementById('confirmationModal');
                 const modal = new bootstrap.Modal(modalElement);
                 modal.show();
             });
         };
 
         onMounted(() => {
-            // Puedes acceder a $refs en onMounted después de que el componente se haya montado.
             console.log("CostoViaje ref en onMounted:", costoViajeRef.value);
         });
 
@@ -182,8 +172,7 @@ export default {
             pagoData,
             modalTitle,
             modalMessage,
-            showModalResumen,
-            costoTotal, // Añade costoTotal al objeto retornado
+            costoTotal,
             isFormValid,
             formHasErrors,
             isPasajeroValid,
@@ -193,7 +182,8 @@ export default {
             isPagoValid,
             submitForm,
             showModal,
-            costoViajeRef, // Agrega la ref aquí
+            costoViajeRef,
+            updateFormValidity,
         };
     },
 };
