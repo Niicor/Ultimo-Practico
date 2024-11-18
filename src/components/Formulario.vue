@@ -3,24 +3,17 @@
     <div class="container" :class="{ 'dark-mode': isDarkMode }">
         <form @submit.prevent="submitForm">
             <div class="row">
-                <!-- Pasajeros -->
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <PasajerosForm v-model="pasajeroData" />
                 </div>
-
-                <!-- Vuelo -->
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <VueloForm v-model="vueloData" />
                 </div>
-
-                <!-- Costo -->
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <CostoViaje v-if="vueloData.ciudadOrigen && vueloData.ciudadDestino" :vueloData="vueloData"
                         :is-dark-mode="isDarkMode" ref="costoViaje" />
                 </div>
-
-                <!-- Pagos -->
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <PagosForm v-model="pagoData" />
                 </div>
             </div>
@@ -38,7 +31,6 @@
             </button>
         </form>
 
-        <!-- Resumen de la Reserva -->
         <ResumenReserva v-if="showModalResumen" :pasajero="pasajeroData" :vuelo="vueloData" :pago="pagoData"
             :is-dark-mode="isDarkMode" :costoTotal="costoTotal" />
 
@@ -48,20 +40,17 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="confirmationModalLabel">
-                            {{ modalTitle }}
-                        </h5>
+                        <h5 class="modal-title" id="confirmationModalLabel">{{ modalTitle }}</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">{{ modalMessage }}</div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                            Cerrar
-                        </button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                     </div>
                 </div>
             </div>
         </div>
+
     </div>
 </template>
 

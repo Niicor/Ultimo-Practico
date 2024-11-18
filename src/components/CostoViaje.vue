@@ -3,13 +3,32 @@
     <div class="card mt-3" :class="{ 'dark-mode': isDarkMode }">
         <div class="card-body">
             <h5 class="card-title">Costo del Viaje</h5>
-            <div v-if="costoBase !== null">
-                <p>Costo base por trayecto: ${{ costoBase.toFixed(2) }}</p>
-                <p v-if="vueloData.tipoVuelo === 'idaYVuelta'">Costo ida y vuelta: ${{ (costoBase * 2).toFixed(2) }}</p>
-                <p>Costo por clase: +$ {{ costoClase.toFixed(2) }}</p>
-                <p>Costo por boleto: ${{ costoPorBoleto.toFixed(2) }}</p>
-                <p>Costo total ({{ vueloData.numeroBoletos }} boletos): ${{ costoTotal.toFixed(2) }}</p>
-            </div>
+
+            <table v-if="costoBase" class="table table-bordered">
+                <tbody>
+                    <tr>
+                        <td>Costo base por trayecto:</td>
+                        <td>$ {{ costoBase.toFixed(2) }}</td>
+                    </tr>
+                    <tr v-if="vueloData.tipoVuelo === 'idaYVuelta'">
+                        <td>Costo ida y vuelta:</td>
+                        <td>$ {{ (costoBase * 2).toFixed(2) }}</td>
+                    </tr>
+                    <tr>
+                        <td>Costo por clase ({{ vueloData.claseVuelo }}):</td> <!-- Mostrar la clase seleccionada -->
+                        <td>$ {{ costoClase.toFixed(2) }}</td>
+                    </tr>
+                    <tr>
+                        <td>Costo por boleto:</td>
+                        <td>$ {{ costoPorBoleto.toFixed(2) }}</td>
+                    </tr>
+                    <tr>
+                        <td>Costo total ({{ vueloData.numeroBoletos }} boletos):</td>
+                        <td>$ {{ costoTotal.toFixed(2) }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
             <div v-else-if="vueloData.ciudadOrigen && vueloData.ciudadDestino">Calculando costo...</div>
             <div v-else>Selecciona origen y destino para calcular el costo.</div>
         </div>
@@ -130,11 +149,21 @@ export default {
     color: #f8f9fa;
 }
 
+.dark-mode table {
+    color: #f8f9fa;
+}
+
+.dark-mode th,
+.dark-mode td {
+    border-color: #6c757d;
+    /* Color de borde de la tabla en modo oscuro */
+}
+
 .dark-mode p {
-    color: white
+    color: white;
 }
 
 .dark-mode h5 {
-    color: white
+    color: white;
 }
 </style>
