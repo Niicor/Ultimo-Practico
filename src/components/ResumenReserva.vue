@@ -44,9 +44,9 @@
         <div class="card mt-4" :class="{ 'dark-mode': isDarkMode }">
             <div class="card-body">
                 <!-- Resumen del precio total -->
-                <div v-if="costoTotal"> <!-- Mostrar solo si costoTotal existe -->
+                <div v-if="costoTotal">
                     <h5>Precio Total</h5>
-                    <p> ${{ costoTotal }} </p> <!-- Usar la prop costoTotal -->
+                    <p>USD $ {{ costoTotalFormatted }} </p> <!-- Mostrar el valor formateado -->
                 </div>
             </div>
         </div>
@@ -79,6 +79,9 @@ export default {
                 }
             }
             return null;
+        },
+        costoTotalFormatted() {  // Nueva propiedad computada
+            return this.costoTotal ? this.costoTotal.toFixed(2) : 0;
         },
     },
     methods: {

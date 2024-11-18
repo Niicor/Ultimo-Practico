@@ -3,7 +3,7 @@
     <div class="card mt-3" :class="{ 'dark-mode': isDarkMode }">
         <div class="card-body">
             <h5 class="card-title">Costo del Viaje (USD)</h5>
-            <h6 class="card-subtitle mb-2 text-info" >(Precios en dólares estadounidenses)</h6>
+            <h6 class="card-subtitle mb-2 text-info">(Precios en dólares estadounidenses)</h6>
 
             <table v-if="costoBase" class="table table-bordered table-striped">
                 <tbody>
@@ -109,16 +109,23 @@ export default {
         const costoPorBoleto = computed(() => costoBase.value + costoExtraClase.value);
 
         const costos = computed(() => {
+            const costoIdaYVuelta = props.vueloData.tipoVuelo === 'idaYVuelta' ? costoPorBoleto.value * 2 : 0;
             return [
                 { name: 'Costo base por trayecto', costo: costoBase.value, boletos: '', showBoletos: false },
-                { name: 'Costo ida y vuelta', costo: costoBase.value * (props.vueloData.tipoVuelo === 'idaYVuelta' ? 2 : 0), boletos: '', showBoletos: false },
+                { name: 'Costo ida y vuelta', costo: costoIdaYVuelta, boletos: '', showBoletos: false }, // Cambio aquí
                 { name: `Costo extra por clase (${props.vueloData.claseVuelo})`, costo: costoExtraClase.value, boletos: '', showBoletos: false },
                 { name: 'Costo por boleto', costo: costoPorBoleto.value, boletos: '', showBoletos: false },
                 { name: 'Costo total', costo: costoTotal.value, boletos: props.vueloData.numeroBoletos, showBoletos: true },
             ].filter(item => props.vueloData.tipoVuelo !== 'ida' || item.name !== 'Costo ida y vuelta');
         });
 
-        const costoTotal = computed(() => costoPorBoleto.value * props.vueloData.numeroBoletos);
+        const costoTotal = computed(() => {
+            if (props.vueloData.tipoVuelo === 'idaYVuelta') {
+                return costoPorBoleto.value * props.vueloData.numeroBoletos * 2; // Multiplicar por 2 para ida y vuelta
+            } else {
+                return costoPorBoleto.value * props.vueloData.numeroBoletos;
+            }
+        });
 
         return {
             aeropuertos,
