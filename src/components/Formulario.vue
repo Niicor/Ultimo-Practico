@@ -22,8 +22,7 @@
                 <div class="col-md-6">
                     <div class="card mb-3">
                         <div class="card-body">
-                            <CostoViaje v-if="vueloData.ciudadOrigen && vueloData.ciudadDestino" :vueloData="vueloData"
-                                :is-dark-mode="isDarkMode" ref="costoViajeRef" />
+                            <CostoViaje :vueloData="vueloData" :is-dark-mode="isDarkMode" ref="costoViajeRef" />
                         </div>
                     </div>
                 </div>

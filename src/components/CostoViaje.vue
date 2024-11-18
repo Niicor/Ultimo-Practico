@@ -5,18 +5,19 @@
             <h5 class="card-title">Costo del Viaje (USD)</h5>
             <h6 class="card-subtitle mb-2 text-info">(Precios en dólares estadounidenses)</h6>
 
-            <table v-if="costoBase" class="table table-bordered table-striped">
+            <table v-if="mostrarCostos" class="table table-bordered table-striped">
                 <tbody>
                     <tr v-for="(item, index) in costos" :key="index"
                         :class="{ 'table-active': index % 2 === 1, 'total-row': item.name === 'Costo total' }">
                         <td>{{ item.name }}<span v-if="item.showBoletos"> ({{ item.boletos }} boletos)</span>:</td>
-                        <td>USD $ {{ item.costo.toFixed(2) }}</td>
+                        <td v-if="item.costo !== null">USD $ {{ item.costo.toFixed(2) }}</td>
+                        <td v-else> - </td>
                     </tr>
                 </tbody>
             </table>
-
-            <div v-else-if="vueloData.ciudadOrigen && vueloData.ciudadDestino">Calculando costo...</div>
-            <div v-else>Selecciona origen y destino para calcular el costo.</div>
+            <div v-else class="text-center">
+                Selecciona origen y destino para calcular el costo.
+            </div>
         </div>
     </div>
 </template>
@@ -110,13 +111,21 @@ export default {
 
         const costos = computed(() => {
             const costoIdaYVuelta = props.vueloData.tipoVuelo === 'idaYVuelta' ? costoPorBoleto.value * 2 : 0;
-            return [
-                { name: 'Costo base por trayecto', costo: costoBase.value, boletos: '', showBoletos: false },
-                { name: 'Costo ida y vuelta', costo: costoIdaYVuelta, boletos: '', showBoletos: false }, // Cambio aquí
-                { name: `Costo extra por clase (${props.vueloData.claseVuelo})`, costo: costoExtraClase.value, boletos: '', showBoletos: false },
-                { name: 'Costo por boleto', costo: costoPorBoleto.value, boletos: '', showBoletos: false },
-                { name: 'Costo total', costo: costoTotal.value, boletos: props.vueloData.numeroBoletos, showBoletos: true },
-            ].filter(item => props.vueloData.tipoVuelo !== 'ida' || item.name !== 'Costo ida y vuelta');
+
+            // Inicializa los costos con valores null si no se han calculado aún.
+            let costosArray = [
+                { name: 'Costo base por trayecto', costo: costoBase.value || null, boletos: '', showBoletos: false },
+                { name: 'Costo ida y vuelta', costo: costoIdaYVuelta || null, boletos: '', showBoletos: false },
+                { name: `Costo extra por clase (${props.vueloData.claseVuelo || ''})`, costo: costoExtraClase.value || null, boletos: '', showBoletos: false },
+                { name: 'Costo por boleto', costo: costoPorBoleto.value || null, boletos: '', showBoletos: false },
+                { name: 'Costo total', costo: costoTotal.value || null, boletos: props.vueloData.numeroBoletos || '', showBoletos: true },
+            ];
+
+            if (props.vueloData.tipoVuelo === 'ida') {
+                costosArray = costosArray.filter(item => item.name !== 'Costo ida y vuelta');
+            }
+
+            return costosArray;
         });
 
         const costoTotal = computed(() => {
@@ -127,6 +136,8 @@ export default {
             }
         });
 
+        const mostrarCostos = computed(() => props.vueloData.ciudadOrigen && props.vueloData.ciudadDestino);
+
         return {
             aeropuertos,
             costoBase,
@@ -136,6 +147,7 @@ export default {
             calcularDistancia,
             calcularCostoBase,
             costos, // Retorna el nuevo computed property
+            mostrarCostos, // Agregar mostrarCostos al objeto retornado
         };
     },
 };
