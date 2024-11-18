@@ -44,9 +44,9 @@
         <div class="card mt-4" :class="{ 'dark-mode': isDarkMode }">
             <div class="card-body">
                 <!-- Resumen del precio total -->
-                <div v-if="vuelo && pago" class="mt-3">
+                <div v-if="costoTotal"> <!-- Mostrar solo si costoTotal existe -->
                     <h5>Precio Total</h5>
-                    <p> ${{ calculateTotalPrice() }} </p>
+                    <p> ${{ costoTotal }} </p> <!-- Usar la prop costoTotal -->
                 </div>
             </div>
         </div>
@@ -64,6 +64,7 @@ export default {
         vuelo: Object,
         pago: Object,
         isDarkMode: Boolean,
+        costoTotal: Number,  // Añadir la prop costoTotal
     },
     computed: {
         cardLogo() {
@@ -87,18 +88,6 @@ export default {
             const options = { year: 'numeric', month: 'long', day: 'numeric' };
             return date.toLocaleDateString(undefined, options);
         },
-        calculateTotalPrice() {
-            let basePrice = 100; // Precio base por boleto
-            switch (this.vuelo.claseVuelo) {
-                case 'Ejecutiva':
-                    basePrice *= 1.5;
-                    break;
-                case 'Primera Clase':
-                    basePrice *= 2;
-                    break;
-            }
-            return basePrice * this.vuelo.numeroBoletos;
-        }
     },
 };
 </script>

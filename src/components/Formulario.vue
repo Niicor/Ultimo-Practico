@@ -23,7 +23,7 @@
                     <div class="card mb-3"> <!-- Tarjeta para CostoViaje -->
                         <div class="card-body">
                             <CostoViaje v-if="vueloData.ciudadOrigen && vueloData.ciudadDestino" :vueloData="vueloData"
-                                :is-dark-mode="isDarkMode" ref="costoViaje" />
+                                :is-dark-mode="isDarkMode" ref="costoViajeRef" /> <!-- Asignar la ref aquí -->
                         </div>
                     </div>
                 </div>
@@ -50,11 +50,11 @@
         </form>
 
         <ResumenReserva v-if="showModalResumen" :pasajero="pasajeroData" :vuelo="vueloData" :pago="pagoData"
-            :is-dark-mode="isDarkMode" :costoTotal="costoTotal" />
+            :is-dark-mode="isDarkMode" :costo-total="costoTotal" /> <!-- Pasar costoTotal como prop -->
 
         <!-- Modal de Bootstrap -->
         <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel"
-            aria-hidden="true" ref="confirmationModal">
+            aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -68,7 +68,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 </template>
 
@@ -79,7 +78,7 @@ import CostoViaje from './CostoViaje.vue';
 import PagosForm from './PagosForm.vue';
 import ResumenReserva from './ResumenReserva.vue'; // Importar el componente ResumenReserva
 import * as bootstrap from 'bootstrap';
-import { nextTick } from 'vue';
+import { ref, nextTick, computed, onMounted } from 'vue';
 
 export default {
     components: {
@@ -92,79 +91,110 @@ export default {
     props: {
         isDarkMode: Boolean, // Recibe isDarkMode como prop
     },
-    data() {
-        return {
-            pasajeroData: {},
-            vueloData: {},
-            pagoData: {},
-            modalTitle: '',
-            modalMessage: '',
-            showModalResumen: false, // Nueva variable para controlar la visibilidad del resumen
-        };
-    },
-    computed: {
-        isFormValid() {
-            return this.isPasajeroValid && this.isVueloValid && this.isPagoValid;
-        },
-        formHasErrors() {
-            return !this.isFormValid;
-        },
-        isPasajeroValid() {
-            for (const key in this.pasajeroData) {
-                if (this.pasajeroData[key] === '' || this.pasajeroData[key] === null || (key === 'nombre' && this.pasajeroData[key].length < 3)) return false;
+    setup(props) {
+        const pasajeroData = ref({});
+        const vueloData = ref({});
+        const pagoData = ref({});
+        const modalTitle = ref('');
+        const modalMessage = ref('');
+        const showModalResumen = ref(false); // Nueva variable para controlar la visibilidad del resumen
+        const costoViajeRef = ref(null); // Ref para el componente CostoViaje
+
+        const costoTotal = computed(() => {
+            // Acceder a costoTotal usando la ref
+            return costoViajeRef.value ? costoViajeRef.value.costoTotal : 0;
+        });
+
+        const isFormValid = computed(() => {
+            return isPasajeroValid.value && isVueloValid.value && isPagoValid.value;
+        });
+
+        const formHasErrors = computed(() => {
+            return !isFormValid.value;
+        });
+
+        const isPasajeroValid = computed(() => {
+            for (const key in pasajeroData.value) {
+                if (pasajeroData.value[key] === '' || pasajeroData.value[key] === null || (key === 'nombre' && pasajeroData.value[key].length < 3)) return false;
             }
             return true;
-        },
-        isVueloValid() {
-            for (const key in this.vueloData) {
-                if (!this.vueloData[key]) return false;
+        });
+
+        const isVueloValid = computed(() => {
+            for (const key in vueloData.value) {
+                if (!vueloData.value[key]) return false;
             }
-            return this.vueloData.ciudadOrigen !== this.vueloData.ciudadDestino && this.isFechaSalidaValid && this.isFechaRegresoValid;
-        },
-        isFechaSalidaValid() {
-            if (!this.vueloData.fechaSalida) return false;
-            return new Date(this.vueloData.fechaSalida) > new Date();
-        },
-        isFechaRegresoValid() {
-            if (!this.vueloData.fechaRegreso) return true;
-            return new Date(this.vueloData.fechaRegreso) > new Date(this.vueloData.fechaSalida);
-        },
-        isPagoValid() {
-            for (const key in this.pagoData) {
-                if (!this.pagoData[key]) return false;
+            return vueloData.value.ciudadOrigen !== vueloData.value.ciudadDestino && isFechaSalidaValid.value && isFechaRegresoValid.value;
+        });
+
+        const isFechaSalidaValid = computed(() => {
+            if (!vueloData.value.fechaSalida) return false;
+            return new Date(vueloData.value.fechaSalida) > new Date();
+        });
+
+        const isFechaRegresoValid = computed(() => {
+            if (!vueloData.value.fechaRegreso) return true;
+            return new Date(vueloData.value.fechaRegreso) > new Date(vueloData.value.fechaSalida);
+        });
+
+        const isPagoValid = computed(() => {
+            for (const key in pagoData.value) {
+                if (!pagoData.value[key]) return false;
             }
             return true;
-        },
-        costoTotal() {
-            return this.$refs.costoViaje ? this.$refs.costoViaje.costoTotal : 0;
-        },
-    },
-    methods: {
-        submitForm() {
-            if (this.isFormValid) {
-                this.modalTitle = 'Reserva Confirmada';
-                this.modalMessage = '¡Tu reserva se ha realizado con éxito!';
-                this.showModal();
-                this.showModalResumen = true; // Mostrar el resumen de la reserva
+        });
+
+        const submitForm = () => {
+            if (isFormValid.value) {
+                modalTitle.value = 'Reserva Confirmada';
+                modalMessage.value = '¡Tu reserva se ha realizado con éxito!';
+                showModal();
+                showModalResumen.value = true; // Mostrar el resumen de la reserva
 
                 console.log('Datos del formulario:', {
-                    pasajero: this.pasajeroData,
-                    vuelo: this.vueloData,
-                    pago: this.pagoData,
+                    pasajero: pasajeroData.value,
+                    vuelo: vueloData.value,
+                    pago: pagoData.value,
                 });
             } else {
-                this.modalTitle = 'Error en el Formulario';
-                this.modalMessage = 'Por favor, completa todos los campos correctamente antes de enviar el formulario.';
-                this.showModal();
+                modalTitle.value = 'Error en el Formulario';
+                modalMessage.value = 'Por favor, completa todos los campos correctamente antes de enviar el formulario.';
+                showModal();
             }
-        },
-        showModal() {
+        };
+
+        const showModal = () => {
             nextTick(() => {
-                const modalElement = this.$refs.confirmationModal;
+                const modalElement = document.getElementById('confirmationModal'); // Obtén el elemento por ID
                 const modal = new bootstrap.Modal(modalElement);
                 modal.show();
             });
-        },
+        };
+
+        onMounted(() => {
+            // Puedes acceder a $refs en onMounted después de que el componente se haya montado.
+            console.log("CostoViaje ref en onMounted:", costoViajeRef.value);
+        });
+
+        return {
+            pasajeroData,
+            vueloData,
+            pagoData,
+            modalTitle,
+            modalMessage,
+            showModalResumen,
+            costoTotal, // Añade costoTotal al objeto retornado
+            isFormValid,
+            formHasErrors,
+            isPasajeroValid,
+            isVueloValid,
+            isFechaSalidaValid,
+            isFechaRegresoValid,
+            isPagoValid,
+            submitForm,
+            showModal,
+            costoViajeRef, // Agrega la ref aquí
+        };
     },
 };
 </script>
