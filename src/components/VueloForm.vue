@@ -76,9 +76,6 @@
                     <div v-if="numeroBoletosError" class="invalid-feedback">{{ numeroBoletosError }}</div>
                 </div>
 
-                <div class="col-12">
-                    <button type="submit" class="btn btn-primary">Reservar Vuelo</button>
-                </div>
             </form>
         </div>
     </div>
