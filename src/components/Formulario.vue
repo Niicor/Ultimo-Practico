@@ -3,12 +3,23 @@
     <div class="container" :class="{ 'dark-mode': isDarkMode }">
         <form @submit.prevent="submitForm">
             <div class="row">
+                <!-- Pasajeros -->
                 <div class="col-md-4">
                     <PasajerosForm v-model="pasajeroData" />
                 </div>
+
+                <!-- Vuelo -->
                 <div class="col-md-4">
                     <VueloForm v-model="vueloData" />
                 </div>
+
+                <!-- Costo -->
+                <div class="col-md-4">
+                    <CostoViaje v-if="vueloData.ciudadOrigen && vueloData.ciudadDestino" :vueloData="vueloData"
+                        :is-dark-mode="isDarkMode" ref="costoViaje" />
+                </div>
+
+                <!-- Pagos -->
                 <div class="col-md-4">
                     <PagosForm v-model="pagoData" />
                 </div>
@@ -29,7 +40,7 @@
 
         <!-- Resumen de la Reserva -->
         <ResumenReserva v-if="showModalResumen" :pasajero="pasajeroData" :vuelo="vueloData" :pago="pagoData"
-            :is-dark-mode="isDarkMode" />
+            :is-dark-mode="isDarkMode" :costoTotal="costoTotal" />
 
         <!-- Modal de Bootstrap -->
         <div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel"
@@ -57,6 +68,7 @@
 <script>
 import PasajerosForm from './PasajerosForm.vue';
 import VueloForm from './VueloForm.vue';
+import CostoViaje from './CostoViaje.vue';
 import PagosForm from './PagosForm.vue';
 import ResumenReserva from './ResumenReserva.vue'; // Importar el componente ResumenReserva
 import * as bootstrap from 'bootstrap';
@@ -66,8 +78,9 @@ export default {
     components: {
         PasajerosForm,
         VueloForm,
+        CostoViaje,
         PagosForm,
-        ResumenReserva, // Registrar el componente ResumenReserva
+        ResumenReserva,
     },
     props: {
         isDarkMode: Boolean, // Recibe isDarkMode como prop
@@ -114,6 +127,9 @@ export default {
                 if (!this.pagoData[key]) return false;
             }
             return true;
+        },
+        costoTotal() {
+            return this.$refs.costoViaje ? this.$refs.costoViaje.costoTotal : 0;
         },
     },
     methods: {
