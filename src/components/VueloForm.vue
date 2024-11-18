@@ -104,14 +104,14 @@ export default {
 
         onMounted(async () => {
             try {
-                const response = await fetch('/src/data/airport.json');
+                const response = await fetch('/airport.json');
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 aeropuertos.value = await response.json();
             } catch (error) {
                 console.error("Error al cargar aeropuertos:", error);
-                alert("No se pudieron cargar los aeropuertos. Por favor, inténtalo de nuevo más tarde.");
+                
             }
         });
 

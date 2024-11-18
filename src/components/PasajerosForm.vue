@@ -64,7 +64,7 @@ export default {
 
         onMounted(async () => {
             try {
-                const response = await fetch('/src/data/countries.json');
+                const response = await fetch('/countries.json');
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
@@ -73,7 +73,7 @@ export default {
                 paises.value = Array.isArray(data) ? data : [];
             } catch (error) {
                 console.error("Error al cargar países:", error);
-                alert("No se pudieron cargar las nacionalidades. Por favor, inténtalo de nuevo más tarde.");
+                
             }
 
             // Calcular la fecha máxima permitida (fecha actual)
